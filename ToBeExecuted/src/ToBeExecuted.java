@@ -33,12 +33,15 @@ public class ToBeExecuted {
 	public static void main(String[] args) throws IOException {
 		try {
 			long startTime = System.nanoTime();
-			String FilePath = "C:\\Users\\ruchi\\eclipse-workspace\\ToBeExecuted\\cran\\cran.all.1400";
+			String FilePath = "C:\\Users\\ruchi\\ToBeExecuted\\cran\\cran.all.1400";
+			String QueryPath="C:\\Users\\ruchi\\ToBeExecuted\\cran\\cran.qry";
 			ParseDocument p = new ParseDocument();
-			HashMap<Integer, String> KeyDocument = p.GetFileData(FilePath);
-			System.out.println("No of Documents in the File are:" + KeyDocument.size());
-			HashMap<Integer, ArrayList<String>> token = Tokenize(KeyDocument);
-			p.InvertedIndex(token);
+			//HashMap<Integer, String> KeyDocument = p.GetFileData(FilePath);
+			HashMap<Integer, String> QueryKeyDocument = p.GetFileData(QueryPath);			
+			//System.out.println("No of Documents in the File are:" + KeyDocument.size());
+			HashMap<Integer, ArrayList<String>> token = Tokenize(QueryKeyDocument);
+			p.QueryTermCount(token);
+			//p.InvertedIndex(token);
 			long endTime = System.nanoTime();
 			long totaltime=(endTime-startTime);
 			System.out.println("Total time taken:"+ totaltime);

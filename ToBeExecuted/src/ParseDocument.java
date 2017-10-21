@@ -19,7 +19,7 @@ public class ParseDocument {
 		HashMap<Integer, String> IDString = new HashMap<Integer, String>();
 		BufferedReader br = new BufferedReader(new FileReader(FilePath));
 		BufferedReader br1 = new BufferedReader(
-				new FileReader("C:\\Users\\ruchi\\eclipse-workspace\\ToBeExecuted\\cran\\english.stop.doc"));
+				new FileReader("C:\\Users\\ruchi\\ToBeExecuted\\cran\\english.stop.doc"));
 		String s1 = "";
 		String regex = "(\\b";
 		while ((s1 = br1.readLine()) != null) {
@@ -109,6 +109,43 @@ public class ParseDocument {
 		
 	}
 	
+	public void QueryTermCount(HashMap<Integer,ArrayList<String>> token)
+	{
+		Connection c=null;
+		Statement stmt=null;
+		String sql=null;
+		try {
+	        Class.forName("org.postgresql.Driver");
+	        c = DriverManager
+	           .getConnection("jdbc:postgresql://localhost:5432/Irsassignment",
+	           "postgres", "ruchita");
+	        System.out.println("Opened database successfully");
+	        stmt=c.createStatement();
+	        for(Integer data:token.keySet())
+	    		{
+	    			//System.out.println(data.toString()+" "+token.get(data).toString());
+	    			ArrayList<String> value=token.get(data);
+	    			for(int i=0;i<value.size();i++)
+	    			{
+	    				try
+	    				{
+	    				//System.out.println(value.get(i) + ": " + Collections.frequency(value, value.get(i)));
+	    				sql="INSERT INTO Query(QUERYID,TERM,TERMFREQUENCY) VALUES ('" +
+	    						data.toString()+"','"+value.get(i)+"','"+Collections.frequency(value, value.get(i))+"')";
+	    				stmt.executeUpdate(sql);
+	    				}
+	    				catch(Exception e)
+	    				{}
+	    			}}
+		}
+		catch(Exception e)
+		{
+			System.exit(0);
+		}
+
+		
+		
+	}
 	//	public void InvertedIndex(HashMap<Integer,ArrayList<String>> token)
 //	{
 //	Connection c=null;
