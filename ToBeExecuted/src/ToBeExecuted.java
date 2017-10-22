@@ -25,7 +25,7 @@ public class ToBeExecuted {
 			wordCount += words.length;
 		}
 		
-		System.out.println("Total words in the file are:"+ wordCount);
+		//System.out.println("Total words in the file are:"+ wordCount);
 		return (token);
 	}
 
@@ -33,6 +33,7 @@ public class ToBeExecuted {
 	public static void main(String[] args) throws IOException {
 		try {
 			long startTime = System.nanoTime();
+			Scanner sc=new Scanner(System.in);
 			String FilePath = "C:\\Users\\ruchi\\ToBeExecuted\\cran\\cran.all.1400";
 			String QueryPath="C:\\Users\\ruchi\\ToBeExecuted\\cran\\cran.qry";
 			ParseDocument p = new ParseDocument();
@@ -43,6 +44,9 @@ public class ToBeExecuted {
 			//p.WeightedFrequency();
 			//p.QueryTermCount(token);
 			//p.InvertedIndex(token);
+			System.out.println("Enter the document id you want to search:");
+			int queryid=sc.nextInt();
+			p.FindDocument(queryid);
 			long endTime = System.nanoTime();
 			long totaltime=(endTime-startTime);
 			System.out.println("Total time taken:"+ totaltime);

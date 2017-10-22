@@ -5,15 +5,18 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.*;
 import java.sql.*;
 
 public class ParseDocument {
 	//Parses the file and reads each document and content removes stopwords and punctuation marks.
-	int sizeOfDataSet=0;
+	int sizeOfDataSet=0;	
 	public HashMap<Integer, String> GetFileData(String FilePath) throws IOException {
 		
 		HashMap<Integer, String> IDString = new HashMap<Integer, String>();
@@ -189,6 +192,81 @@ public class ParseDocument {
 		
 	}
 	
+	static <K,V extends Comparable<? super V>> 
+    void entriesSortedByValues(HashMap<K,V> map) {
+
+		List<Entry<K,V>> sortedEntries = new ArrayList<Entry<K,V>>(map.entrySet());
+
+		Collections.sort(sortedEntries, 
+				new Comparator<Entry<K,V>>() {
+        @Override
+        public int compare(Entry<K,V> e1, Entry<K,V> e2) {
+            return e2.getValue().compareTo(e1.getValue());
+        }
+    }
+				);
+		System.out.println("Relevant Documents for your query are: ");
+		System.out.println();
+        System.out.println("Document    RSV value");
+		for (int i=0;i<10;i++) {
+        	System.out.println(".I "+sortedEntries.get(i).getKey()+"        "+sortedEntries.get(i).getValue());
+		}
+		//System.out.println(sortedEntries);
+}
+	public void FindDocument(int queryid)
+	{
+		Connection c=null;
+		Statement stmt=null,stmt2=null;
+		String sql=null,term1;
+		int id,termfreq;
+		float weight;
+		HashMap<Integer,Float> Score=new HashMap<Integer,Float>();
+		try {
+	        Class.forName("org.postgresql.Driver");
+	        c = DriverManager
+	           .getConnection("jdbc:postgresql://localhost:5432/Irsassignment",
+	           "postgres", "ruchita");
+	        //System.out.println("Opened database successfully");
+
+	        stmt = c.createStatement();
+	        sql="Select * from query where queryid='"+queryid+"'";
+	        ResultSet rs=stmt.executeQuery(sql);
+	        if(rs.getRow()==0)
+        	{
+        		System.out.println("Wrong Selection...Select the query from the list");
+        		System.exit(0);
+        	}
+	        while(rs.next())
+	        {
+	        	term1=rs.getString("term");
+	        	termfreq=rs.getInt("termfrequency");
+	        	stmt2=c.createStatement();
+	        	sql="select documentid,weightedfreq from invertedindex where term='"+term1+"'";
+	        	ResultSet rs1=stmt2.executeQuery(sql);
+	        	while(rs1.next())
+	        	{
+	        		id=rs1.getInt(1);
+	        		weight=rs1.getFloat(2);
+	        		if(Score.containsKey(id))
+	        		{
+	        			Score.put(id, Score.get(id) + weight*termfreq);
+	        		}
+	        		else
+	        		{
+	        			Score.put(id, weight*termfreq);
+	        		}       		
+	             }
+	        }
+	        entriesSortedByValues(Score);
+	        
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+		
+		
+	}
 	
 	/*public void InvertedIndex(HashMap<Integer,ArrayList<String>> token)
 	{
