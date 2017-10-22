@@ -40,7 +40,8 @@ public class ToBeExecuted {
 			HashMap<Integer, String> QueryKeyDocument = p.GetFileData(QueryPath);			
 			//System.out.println("No of Documents in the File are:" + KeyDocument.size());
 			HashMap<Integer, ArrayList<String>> token = Tokenize(QueryKeyDocument);
-			p.QueryTermCount(token);
+			//p.WeightedFrequency();
+			//p.QueryTermCount(token);
 			//p.InvertedIndex(token);
 			long endTime = System.nanoTime();
 			long totaltime=(endTime-startTime);

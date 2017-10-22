@@ -146,59 +146,103 @@ public class ParseDocument {
 		
 		
 	}
-	//	public void InvertedIndex(HashMap<Integer,ArrayList<String>> token)
-//	{
-//	Connection c=null;
-//	Statement stmt=null;
-//	String sql=null;
-//	int max=0,min=0,avg;
-//	try {
-//        Class.forName("org.postgresql.Driver");
-//        c = DriverManager
-//           .getConnection("jdbc:postgresql://localhost:5432/Irsassignment",
-//           "postgres", "ruchita");
-//        System.out.println("Opened database successfully");
-//
-//        stmt = c.createStatement();
-//        for(Integer data:token.keySet())
-//    		{
-//    			//System.out.println(data.toString()+" "+token.get(data).toString());
-//    			ArrayList<String> value=token.get(data);
-//    			for(int i=0;i<value.size();i++)
-//    			{
-//    				try
-//    				{
-//    				//System.out.println(value.get(i) + ": " + Collections.frequency(value, value.get(i)));
-//    				sql="INSERT INTO INVERTEDINDEX(TERM,DOCUMENTID,COUNT) VALUES ('" +
-//    					value.get(i)+"',"+data.toString()+",'"+Collections.frequency(value, value.get(i))+"')";
-//    				stmt.executeUpdate(sql);
-//    				}
-//    				catch(Exception e)
-//    				{}
-//    			}}
-//    	sql="select count(*) from (select term,count(term) from invertedindex group by term) as dt";
-//    	ResultSet rs=stmt.executeQuery(sql);
-//    	if(rs.next())
-//    	System.out.println("Total number of unique words are:"+rs.getString(1));
-//    	sql="select max(aa) from (select term,count(term)as aa from invertedindex group by term) as dt";
-//    	ResultSet rs1=stmt.executeQuery(sql);
-//    	if(rs1.next()) {
-//    		max=rs1.getInt(1);
-//    	System.out.println("Maximum no of postings:"+max);}
-//    	sql="select min(aa) from (select term,count(term)as aa from invertedindex group by term) as dt";
-//    	ResultSet rs2=stmt.executeQuery(sql);
-//    	if(rs2.next()) {
-//    		min=rs2.getInt(1);
-//    	System.out.println("Minimum no of postings:"+min);}
-//    	avg=(max+min)/2;
-//    	System.out.println("Average no of postings:"+avg);
-//        stmt.close();
-//        c.close();
-//     } catch ( Exception e ) {
-//        System.err.println( e.getClass().getName()+": "+ e.getMessage() );
-//        System.exit(0);
-//     }
-//		
-//	}
 	
+	public void WeightedFrequency()
+	{
+		
+		Connection c=null;
+		Statement stmt=null;
+		String id,term;
+		int frequency=0,max=1;
+		String sql=null;
+		ResultSet rs;
+		float weight=0;
+		try {
+	        Class.forName("org.postgresql.Driver");
+	        c = DriverManager
+	           .getConnection("jdbc:postgresql://localhost:5432/Irsassignment",
+	           "postgres", "ruchita");
+	        System.out.println("Opened database successfully");
+	        stmt=c.createStatement();
+	        sql="select * from invertedindex";
+	    	rs=stmt.executeQuery(sql);
+	    	while(rs.next())
+	    	{
+	    		id=rs.getString("documentid");
+	    		frequency=rs.getInt("count");
+	    		term=rs.getString("term");
+	    		Statement stmt1=c.createStatement();
+	    		sql="select max(count) from (select count from invertedindex where documentid='"+id+"') as dt";
+	    		ResultSet rs1=stmt1.executeQuery(sql);
+	    		if(rs1.next())
+	    		max=rs1.getInt(1);
+	    		weight=(float)frequency/max;
+	    		sql="UPDATE INVERTEDINDEX SET weightedfreq="+weight+"WHERE term='"+term+"' and documentid='"+id+"'";
+	    		stmt1.executeUpdate(sql);
+	    	}
+	    	
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+		
+	}
+	
+	
+	/*public void InvertedIndex(HashMap<Integer,ArrayList<String>> token)
+	{
+	Connection c=null;
+	Statement stmt=null;
+	String sql=null;
+	int max=0,min=0,avg;
+	try {
+        Class.forName("org.postgresql.Driver");
+        c = DriverManager
+           .getConnection("jdbc:postgresql://localhost:5432/Irsassignment",
+           "postgres", "ruchita");
+        System.out.println("Opened database successfully");
+
+        stmt = c.createStatement();
+        for(Integer data:token.keySet())
+    		{
+    			//System.out.println(data.toString()+" "+token.get(data).toString());
+    			ArrayList<String> value=token.get(data);
+    			for(int i=0;i<value.size();i++)
+    			{
+    				try
+    				{
+    				//System.out.println(value.get(i) + ": " + Collections.frequency(value, value.get(i)));
+    				sql="INSERT INTO INVERTEDINDEX(TERM,DOCUMENTID,COUNT,weightedfreq) VALUES ('" +
+    					value.get(i)+"',"+data.toString()+",'"+Collections.frequency(value, value.get(i))+"',0.0)";
+    				stmt.executeUpdate(sql);
+    				}
+    				catch(Exception e)
+    				{}
+    			}}
+    	sql="select count(*) from (select term,count(term) from invertedindex group by term) as dt";
+    	ResultSet rs=stmt.executeQuery(sql);
+    	if(rs.next())
+    	System.out.println("Total number of unique words are:"+rs.getString(1));
+    	sql="select max(aa) from (select term,count(term)as aa from invertedindex group by term) as dt";
+    	ResultSet rs1=stmt.executeQuery(sql);
+    	if(rs1.next()) {
+    		max=rs1.getInt(1);
+    	System.out.println("Maximum no of postings:"+max);}
+    	sql="select min(aa) from (select term,count(term)as aa from invertedindex group by term) as dt";
+    	ResultSet rs2=stmt.executeQuery(sql);
+    	if(rs2.next()) {
+    		min=rs2.getInt(1);
+    	System.out.println("Minimum no of postings:"+min);}
+    	avg=(max+min)/2;
+    	System.out.println("Average no of postings:"+avg);
+        stmt.close();
+        c.close();
+     } catch ( Exception e ) {
+        System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+        System.exit(0);
+     }
+		
+	}
+*/	
 }
